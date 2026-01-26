@@ -3,14 +3,17 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-lates
+    env:
+      SIM: ghdl
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup GHDL
         uses: ghdl/setup-ghdl@v1
         with:
-          version: v4.0.0
+          version: 'v4.0.0'
           backend: llvm
           investigate: true
 
@@ -26,11 +29,9 @@ jobs:
       - name: Run single bit cdc tests
         run: |
           # Configura GHDL como simulador
-          export SIM=ghdl
           pytest ./single_bit/tb/test_bit_cdc.py
 
       - name: Run multi bits cdc tests
         run: |
           # Configura GHDL como simulador
-          export SIM=ghdl
           pytest ./multi_bits/tb/test_gray_cdc.py

@@ -1,0 +1,84 @@
+
+resources:
+  containers:
+  - container: questa
+    image: amartinezc12/utilities:questasim-2022.3
+    options: -e LM_LICENSE_FILE=1717@172.16.10.103
+  - container: vivado
+    image: amartinezc12/utilities:vivado-2019.2
+    options: --mac-address 02:42:ac:11:00:02
+  repositories:
+  - repository: Tools
+    type: git
+    name: Tools
+    ref: refs/tags/v1.0.33
+
+pool: QS050-PCT-L
+
+stages:
+- stage: Test
+  jobs:
+  - job: Test_gray_cdc
+    displayName: Test_gray_cdc
+    container: questa
+    steps:
+    - checkout: self
+    - bash: |
+        cd multi_bits/tb
+        npm run test
+
+  - job: Test_bit_cdc
+    displayName: Test_bit_cdc
+    container: questa
+    steps:
+    - checkout: self
+    - bash: |
+        cd single_bit/tb
+        npm run test
+
+
+- stage: Build
+  jobs:
+  - job: Build_gray_cdc_dev
+    displayName: Build_gray_cdc_dev
+    container: vivado
+    steps:
+    - checkout: self
+    - checkout: Tools
+    - bash: |
+        echo Packaging...
+        cd Tools/IP_Packaging
+        cp gen_IP.tcl ../../CDC/multi_bits
+        cp gen_IP_main.tcl ../../CDC/multi_bits
+        cd ../../CDC/multi_bits
+        vivado -mode batch -source gen_IP.tcl -tclargs gray_cdc node_modules 1.0
+    - task: Npm@1
+      continueOnError: true
+      condition: and(succeeded(),eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      inputs:
+        workingDir: CDC/multi_bits
+        command: publish
+        publishRegistry: useFeed
+        publishFeed: FW Sources/IP_cores_dev
+  
+  - job: Build_bit_cdc_dev
+    displayName: Build_bit_cdc_dev
+    container: vivado
+    steps:
+    - checkout: self
+    - checkout: Tools
+    - bash: |
+        echo Packaging...
+        cd Tools/IP_Packaging
+        cp gen_IP.tcl ../../CDC/single_bit
+        cp gen_IP_main.tcl ../../CDC/single_bit
+        cd ../../CDC/single_bit
+        vivado -mode batch -source gen_IP.tcl -tclargs bit_cdc node_modules 1.0
+    - task: Npm@1
+      continueOnError: true
+      condition: and(succeeded(),eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      inputs:
+        workingDir: CDC/single_bit
+        command: publish
+        publishRegistry: useFeed
+        publishFeed: FW Sources/IP_cores_dev

@@ -1,0 +1,24 @@
+{
+    "name": "@quside/gray_cdc",
+    "version": "1.0.0",
+    "description": "Multi bits Gray CDC",
+    "keywords": [
+        "Gray CDC",
+        "CDC"
+    ],
+    "files": [
+        "doc",
+        "gray_cdc",
+        "README.md"
+    ],
+    "devDependencies": {},
+    "homepage": "",
+    "bugs": {
+      "url": ""
+    },
+    "scripts": {
+        "postinstall": "",
+        "test": "cd tb; SIM=questa pytest -o log_cli=True test_gray_cdc.py; cd .."
+      },
+    "author": "Quside"
+}  

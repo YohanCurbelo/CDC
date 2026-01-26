@@ -13,7 +13,7 @@ jobs:
       - name: Setup GHDL
         uses: ghdl/setup-ghdl@v1
         with:
-          version: 'v4.0.0'
+          version: nightly
           backend: llvm
           investigate: true
 

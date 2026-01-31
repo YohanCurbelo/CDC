@@ -1,24 +1,21 @@
 {
-    "name": "@quside/bit_cdc",
+    "name": "@curbeloangles-ips/bit_cdc",
     "version": "1.0.0",
+    "author": "curbeloangles",
     "description": "Single bit CDC",
     "keywords": [
-        "Single bit CDC",
-        "CDC"
+      "Single bit CDC",
+      "CDC"
     ],
     "files": [
-        "doc",
-        "bit_cdc",
-        "README.md"
+      "doc",
+      "src",
+      "tb",
+      "README.md"
     ],
-    "devDependencies": {},
-    "homepage": "",
-    "bugs": {
-      "url": ""
-    },
+    "Dependencies": {},
     "scripts": {
         "postinstall": "",
         "test": "cd tb; SIM=questa pytest -o log_cli=True test_bit_cdc.py; cd .."
-      },
-    "author": "Quside"
+      }
 }  

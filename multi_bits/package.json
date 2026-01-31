@@ -1,24 +1,21 @@
 {
-    "name": "@quside/gray_cdc",
+    "name": "@curbeloangles-ips/gray_cdc",
     "version": "1.0.0",
+    "author": "curbeloangles",
     "description": "Multi bits Gray CDC",
     "keywords": [
-        "Gray CDC",
-        "CDC"
+      "Gray CDC",
+      "CDC"
     ],
     "files": [
-        "doc",
-        "gray_cdc",
-        "README.md"
+      "doc",
+      "src",
+      "tb",
+      "README.md"
     ],
     "devDependencies": {},
-    "homepage": "",
-    "bugs": {
-      "url": ""
-    },
     "scripts": {
         "postinstall": "",
         "test": "cd tb; SIM=questa pytest -o log_cli=True test_gray_cdc.py; cd .."
-      },
-    "author": "Quside"
+      }
 }  

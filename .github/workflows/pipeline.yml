@@ -2,7 +2,7 @@ name: CDC CI/CD pipeline
 on: [push, pull_request]
 
 jobs:
-  test:
+  single_bit_cdc_test:
     runs-on: ubuntu-latest
     env:
       SIM: ghdl
@@ -28,10 +28,86 @@ jobs:
 
       - name: Run single bit cdc tests
         run: |
-          # Configura GHDL como simulador
-          pytest ./single_bit/tb/test_bit_cdc.py
+          pytest -o log_cli=True ./single_bit/tb/test_bit_cdc.py
+
+  single_bit_cdc_release:
+    needs: single_bit_cdc_test
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com/'
+
+      - name: Publish single_bit IP if version changed
+        working-directory: ./single_bit
+        run: |
+          VERSION=$(jq -r .version package.json)
+          PKG=@curbeloangles-ips/bit_cdc
+          if ! npm view $PKG@$VERSION --registry=https://npm.pkg.github.com/ > /dev/null 2>&1; then
+            npm publish --access public
+          else
+            echo "Version $VERSION already published. Skipping."
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  multi_bits_cdc_test:
+    runs-on: ubuntu-latest
+    env:
+      SIM: ghdl
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup GHDL
+        uses: ghdl/setup-ghdl@v1
+        with:
+          version: nightly
+          backend: llvm
+          investigate: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.12'
+
+      - name: Install dependencies
+        run: |
+          pip install cocotb pytest cocotb-test
 
       - name: Run multi bits cdc tests
         run: |
-          # Configura GHDL como simulador
-          pytest ./multi_bits/tb/test_gray_cdc.py
+          pytest -o log_cli=True ./multi_bits/tb/test_gray_cdc.py
+
+  multi_bits_cdc_release:
+    needs: multi_bits_cdc_test
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com/'
+
+      - name: Publish multi_bits IP if version changed
+        working-directory: ./multi_bits
+        run: |
+          VERSION=$(jq -r .version package.json)
+          PKG=@curbeloangles-ips/gray_cdc
+          if ! npm view $PKG@$VERSION --registry=https://npm.pkg.github.com/ > /dev/null 2>&1; then
+            npm publish --access public
+          else
+            echo "Version $VERSION already published. Skipping."
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

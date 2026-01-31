@@ -5,10 +5,15 @@ jobs:
   single_bit_cdc_test:
     runs-on: ubuntu-latest
     env:
-      SIM: ghdl
+      SIM: icarus
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
 
       - name: Setup GHDL
         uses: ghdl/setup-ghdl@v1

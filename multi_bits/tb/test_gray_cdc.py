@@ -17,6 +17,7 @@ def test_gray_cdc_questa(parameters):
         verilog_sources=[os.path.join(dir, file) for file in src_v],    # verilog sources
         toplevel="gray_cdc",                                            # top level HDL
         module="gray_cdc_tb",                                           # name of cocotb test module
+        toplevel_lang="vhdl",
         parameters=parameters,
         extra_env=parameters, 
         sim_args=["-t", "1ps", "gray_cdc.glbl"],
